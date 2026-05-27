@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentation Template</title>
+  
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons via CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Mermaid.js via CDN for Diagrams -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+
+  <!-- Chart.js via CDN for Charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Reusable Web Components (Custom Elements) -->
+  <script src="components.js"></script>
+
+  <!-- Tailwind Configuration for Theme Customization & Dark Mode -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f5f3ff',
+              100: '#ede9fe',
+              200: '#ddd6fe',
+              300: '#c4b5fd',
+              400: '#a78bfa',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+              700: '#6d28d9',
+              800: '#5b21b6',
+              900: '#4c1d95',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Tinh chỉnh thanh cuộn cho đẹp mắt */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    
+    /* Thu nhỏ và đồng bộ đường line liên kết của Mermaid */
+    .mermaid .edgePath .path,
+    .mermaid .edgePath path,
+    .mermaid g.edgePath path {
+      stroke-width: 1px !important;
+    }
+
+    /* CSS Overrides cho Mermaid hỗ trợ Light/Dark mode tức thì không cần reload */
+    .mermaid .node rect, 
+    .mermaid .node circle, 
+    .mermaid .node polygon, 
+    .mermaid .node path,
+    .mermaid .node cylinder {
+      fill: #ffffff !important;
+      stroke: #cbd5e1 !important; /* Đồng bộ màu với đường line */
+      stroke-width: 1px !important;
+      transition: fill 0.2s ease, stroke 0.2s ease;
+    }
+    .dark .mermaid .node rect, 
+    .dark .mermaid .node circle, 
+    .dark .mermaid .node polygon, 
+    .dark .mermaid .node path,
+    .dark .mermaid .node cylinder {
+      fill: #18181b !important;
+      stroke: #3f3f46 !important; /* Đồng bộ màu với đường line */
+    }
+    .mermaid .node .label {
+      color: #0f172a !important;
+    }
+    .dark .mermaid .node .label {
+      color: #e2e8f0 !important;
+    }
+    /* Viền ngoài của Subgraph */
+    .mermaid .cluster > rect {
+      fill: #ffffff !important;
+      stroke: #cbd5e1 !important; /* Đồng bộ màu với đường line */
+      stroke-width: 1px !important;
+    }
+    .dark .mermaid .cluster > rect {
+      fill: #09090b !important;
+      stroke: #3f3f46 !important; /* Đồng bộ màu với đường line */
+      stroke-width: 1px !important;
+    }
+    
+    /* Hộp tiêu đề Header của Subgraph (Tạo đường gạch ngang chia đôi) */
+    .mermaid .cluster .label-container,
+    .mermaid .cluster rect.header {
+      fill: #f8fafc !important; /* Màu nền header hơi xám nhẹ */
+      stroke: #cbd5e1 !important;
+      stroke-width: 1px !important;
+    }
+    .dark .mermaid .cluster .label-container,
+    .dark .mermaid .cluster rect.header {
+      fill: #18181b !important; /* Màu nền header tối */
+      stroke: #3f3f46 !important;
+      stroke-width: 1px !important;
+    }
+    .mermaid .cluster .label {
+      color: #64748b !important;
+    }
+    .dark .mermaid .cluster .label {
+      color: #a1a1aa !important;
+    }
+    .mermaid .edgePath .path {
+      stroke: #cbd5e1 !important;
+    }
+    .dark .mermaid .edgePath .path {
+      stroke: #3f3f46 !important;
+    }
+    .mermaid .edgePath .arrowheadPath {
+      fill: #94a3b8 !important;
+      stroke: none !important;
+      transform: scale(0.65) translate(-2px, -1px) !important;
+    }
+    .dark .mermaid .edgePath .arrowheadPath {
+      fill: #52525b !important;
+      stroke: none !important;
+      transform: scale(0.65) translate(-2px, -1px) !important;
+    }
+    
+    /* Giao diện xem toàn màn hình (fullscreen board) cho sơ đồ */
+    .mermaid-fullscreen-active {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 50 !important;
+      background-color: rgba(9, 9, 11, 0.96) !important;
+      padding: 5rem 2rem 2rem 2rem !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      overflow: auto !important;
+      border-radius: 0 !important;
+      border: none !important;
+    }
+    .mermaid-fullscreen-active [id^="main-mermaid-diagram"] {
+      flex: 1 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: 100% !important;
+      height: 100% !important;
+      overflow: auto !important;
+    }
+    .mermaid-fullscreen-active svg {
+      max-width: 95% !important;
+      max-height: 85vh !important;
+      height: auto !important;
+      width: auto !important;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-200 min-h-screen flex flex-col font-sans transition-colors duration-200">
+
+  <!-- TOP HEADER -->
+  <header class="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/80 backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-900/80 transition-colors duration-200">
+    <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      
+      <!-- Logo & Hamburger Menu (Mobile Only) -->
+      <div class="flex items-center gap-3">
+        <button id="mobile-sidebar-toggle" class="p-2 -ml-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800 md:hidden transition-colors" aria-label="Toggle navigation">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+        <a href="#" class="flex items-center gap-2.5 font-bold text-lg tracking-tight text-slate-900 dark:text-white">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
+            <i data-lucide="book-open" class="w-4.5 h-4.5"></i>
+          </div>
+          <span>Dev<span class="text-brand-600 dark:text-brand-400">Docs</span></span>
+        </a>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="hidden sm:flex flex-1 max-w-md relative">
+        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+          <i data-lucide="search" class="h-4 w-4 text-slate-400"></i>
+        </div>
+        <input type="text" id="search-input" placeholder="Tìm kiếm tài liệu..." class="w-full rounded-full border border-slate-200 bg-slate-50/50 py-1.5 pl-9 pr-4 text-sm text-slate-900 placeholder-slate-400 focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-900/50 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:bg-slate-900 transition-all">
+        <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+          <kbd class="hidden md:inline-block rounded border border-slate-200 bg-white px-1.5 font-mono text-[10px] font-medium text-slate-400 dark:border-slate-800 dark:bg-slate-900">Ctrl K</kbd>
+        </div>
+      </div>
+
+      <!-- Actions (Theme Toggle, Social Links) -->
+      <div class="flex items-center gap-2">
+        <!-- Theme Toggle -->
+        <button id="theme-toggle" class="p-2.5 rounded-full text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-all" aria-label="Toggle dark mode">
+          <i id="theme-toggle-dark-icon" data-lucide="moon" class="w-5 h-5 hidden"></i>
+          <i id="theme-toggle-light-icon" data-lucide="sun" class="w-5 h-5 hidden"></i>
+        </button>
+
+        <!-- GitHub -->
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="p-2.5 rounded-full text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-all" aria-label="GitHub">
+          <i data-lucide="github" class="w-5 h-5"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN WRAPPER -->
+  <div class="flex-1 max-w-[90rem] w-full mx-auto flex">
+    
+    <!-- LEFT SIDEBAR -->
+    <!-- Backdrop for mobile -->
+    <div id="sidebar-backdrop" class="fixed inset-0 z-30 bg-slate-900/40 backdrop-blur-sm hidden md:hidden"></div>
+    
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-64 bg-white border-r border-slate-200 dark:bg-slate-900 dark:border-slate-800 transform -translate-x-full md:translate-x-0 md:static md:z-0 md:h-[calc(100vh-4rem)] md:sticky md:top-16 transition-all duration-200 overflow-y-auto p-6 flex flex-col gap-6">
+      
+      <!-- Mobile Close Button & Search -->
+      <div class="flex items-center justify-between md:hidden pb-2 border-b border-slate-100 dark:border-slate-800">
+        <span class="font-bold text-slate-900 dark:text-white">Điều hướng</span>
+        <button id="mobile-sidebar-close" class="p-1 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="sm:hidden relative">
+        <i data-lucide="search" class="absolute left-3 top-2.5 h-4 w-4 text-slate-400"></i>
+        <input type="text" placeholder="Tìm kiếm..." class="w-full rounded-lg border border-slate-200 bg-slate-50/50 py-2 pl-9 pr-4 text-sm focus:outline-none dark:border-slate-800 dark:bg-slate-900">
+      </div>
+
+      <!-- Navigation Link Tree -->
+      <nav class="flex-1 flex flex-col gap-6 text-sm">
+        
+        <!-- AI_AGENT:SIDEBAR_NAVIGATION_START -->
+        
+        <!-- Nhóm 1: Bắt đầu -->
+        <div class="flex flex-col gap-2">
+          <h3 class="font-semibold text-slate-900 dark:text-white uppercase tracking-wider text-[11px] text-slate-400 dark:text-slate-500">Giới thiệu chung</h3>
+          <ul class="flex flex-col gap-1 border-l border-slate-100 dark:border-slate-800 ml-1.5 pl-3">
+            <li>
+              <a href="#tong-quan" class="nav-link block py-1.5 text-brand-600 dark:text-brand-400 font-medium -ml-3.5 pl-3.5 border-l-2 border-brand-600 dark:border-brand-400 transition-all">Tổng quan dự án</a>
+            </li>
+            <li>
+              <a href="#huong-dan-ai" class="nav-link block py-1.5 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-all">Hướng dẫn AI Agent</a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Nhóm 2: Các Block Giao Diện Mẫu -->
+        <div class="flex flex-col gap-2">
+          <h3 class="font-semibold text-slate-900 dark:text-white uppercase tracking-wider text-[11px] text-slate-400 dark:text-slate-500">Thành phần UI Mẫu</h3>
+          <ul class="flex flex-col gap-1 border-l border-slate-100 dark:border-slate-800 ml-1.5 pl-3">
+            <li>
+              <a href="#block-alert" class="nav-link block py-1.5 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-all">Hộp thông báo (Alerts)</a>
+            </li>
+            <li>
+              <a href="#block-code" class="nav-link block py-1.5 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-all">Mã nguồn (Code Blocks)</a>
+            </li>
+            <li>
+              <a href="#block-table" class="nav-link block py-1.5 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-all">Bảng biểu & Dữ liệu</a>
+            </li>
+            <li>
+              <a href="#block-cards" class="nav-link block py-1.5 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-all">Danh sách dạng Thẻ (Cards)</a>
+            </li>
+            <li>
+              <a href="#block-steps" class="nav-link block py-1.5 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-all">Quy trình (Steps Layout)</a>
+            </li>
+            <li>
+              <a href="#block-tabs" class="nav-link block py-1.5 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-all">Chuyển đổi tab (Tabs)</a>
+            </li>
+            <li>
+              <a href="#block-accordions" class="nav-link block py-1.5 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-all">Hộp mở rộng (Accordions)</a>
+            </li>
+            <li>
+              <a href="#block-badges-buttons" class="nav-link block py-1.5 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-all">Nhãn & Nút (Badges & Buttons)</a>
+            </li>
+            <li>
+              <a href="#block-diagrams" class="nav-link block py-1.5 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-all">Sơ đồ luồng (Diagrams)</a>
+            </li>
+            <li>
+              <a href="#block-charts" class="nav-link block py-1.5 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-all">Biểu đồ (Charts)</a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- AI_AGENT:SIDEBAR_NAVIGATION_END -->
+
+      </nav>
+    </aside>
+
+
+    <!-- CONTENT WRAPPER -->
+    <main class="flex-1 min-w-0 px-4 sm:px-6 lg:px-8 py-8 lg:py-12 flex gap-10">
+      
+      <!-- MAIN ARTICLE CONTENT -->
+      <article class="flex-1 min-w-0 max-w-3xl">
+        
+        <!-- Breadcrumbs -->
+        <nav class="flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500 mb-4">
+          <a href="#" class="hover:text-slate-600 dark:hover:text-slate-350">Tài liệu</a>
+          <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+          <span class="text-slate-600 dark:text-slate-350 font-medium">Tổng quan</span>
+        </nav>
+
+        <!-- AI_AGENT:MAIN_CONTENT_START -->
+
+        <!-- SECTION: TỔNG QUAN -->
+        <section id="tong-quan" class="mb-12 scroll-mt-20">
+          <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-4">Mẫu tài liệu chuẩn hóa cho AI Agent</h1>
+          <p class="text-lg text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
+            Chào mừng bạn đến với template tài liệu tối giản và hiện đại được tối ưu hóa cho cả người dùng lẫn các **AI Agent**. File HTML này chứa toàn bộ CSS và biểu tượng cần thiết qua CDN, sẵn sàng chạy ngay mà không cần cấu hình phức tạp.
+          </p>
+          <div class="p-5 rounded-2xl bg-gradient-to-tr from-brand-50 to-indigo-50/50 dark:from-brand-950/20 dark:to-indigo-950/20 border border-brand-100 dark:border-brand-900/50 flex gap-4">
+            <div class="text-brand-600 dark:text-brand-400 shrink-0 mt-0.5">
+              <i data-lucide="sparkles" class="w-5.5 h-5.5"></i>
+            </div>
+            <div>
+              <h4 class="font-semibold text-brand-900 dark:text-brand-300 text-sm mb-1">Mục tiêu thiết kế</h4>
+              <p class="text-xs text-brand-700/95 dark:text-brand-400/90 leading-relaxed">
+                Tạo một khung chuẩn duy nhất giúp các AI agent tự động hiểu quy tắc UI, dễ dàng nhân bản mã nguồn để xây dựng hệ thống hướng dẫn, API Docs hoặc giáo trình lập trình đồng bộ.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION: HƯỚNG DẪN AI AGENT -->
+        <section id="huong-dan-ai" class="mb-12 scroll-mt-20 border-t border-slate-100 dark:border-slate-800/60 pt-10">
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight mb-4 flex items-center gap-2">
+            <i data-lucide="cpu" class="w-5 h-5 text-indigo-500"></i>
+            <span>Hướng dẫn dành cho AI Agent</span>
+          </h2>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mb-6">
+            Khi AI Agent muốn thêm nội dung mới, cần tuân thủ 2 vị trí neo (anchor comments) chính trong tệp tin:
+          </p>
+          
+          <ul class="space-y-4 text-sm text-slate-600 dark:text-slate-400">
+            <li class="flex gap-3">
+              <div class="w-5 h-5 rounded-full bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0 font-bold text-xs mt-0.5">1</div>
+              <div>
+                <strong>Danh mục Sidebar:</strong> Thêm liên kết `<a href="#id-cua-ban" ...>` vào trong khối được bao bọc bởi `<!-- AI_AGENT:SIDEBAR_NAVIGATION_START -->` và `<!-- AI_AGENT:SIDEBAR_NAVIGATION_END -->`.
+              </div>
+            </li>
+            <li class="flex gap-3">
+              <div class="w-5 h-5 rounded-full bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0 font-bold text-xs mt-0.5">2</div>
+              <div>
+                <strong>Nội dung chính:</strong> Thêm các thẻ `<section id="id-cua-ban" class="mb-12 scroll-mt-20 border-t border-slate-100 dark:border-slate-800/60 pt-10">` vào bên dưới thẻ bắt đầu `<!-- AI_AGENT:MAIN_CONTENT_START -->`.
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        <!-- SECTION: BLOCK ALERTS -->
+        <section id="block-alert" class="mb-12 scroll-mt-20 border-t border-slate-100 dark:border-slate-800/60 pt-10">
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">Hộp thông báo (Alerts / Callouts)</h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Dùng để làm nổi bật các lưu ý, cảnh báo hoặc lời khuyên quan trọng.</p>
+
+          <div class="space-y-4">
+            <!-- Cách 1: Sử dụng qua Custom HTML Tag -->
+            <docs-alert type="info" title="Thông tin chi tiết (HTML Custom Tag)">
+              Đây là một khối thông báo dạng Info được dựng sẵn bằng <strong>Web Component</strong> kế thừa Tailwind CSS.
+            </docs-alert>
+
+            <!-- Cách 2: Sử dụng qua JS Functional (React/TSX style) -->
+            <div id="dynamic-alert-root"></div>
+            
+            <script>
+              window.addEventListener('DOMContentLoaded', () => {
+                const root = document.getElementById('dynamic-alert-root');
+                if (root && window.DevDocs) {
+                  const dynamicAlert = window.DevDocs.Alert({
+                    type: 'success',
+                    title: 'React/TSX Functional style (Javascript)',
+                    children: 'Đây là Alert được tạo động bằng hàm <code>Alert({ type: "success", title: "...", children: "..." })</code> phong cách TSX, hỗ trợ nút đóng tắt linh hoạt!',
+                    dismissible: true
+                  });
+                  root.appendChild(dynamicAlert);
+                }
+              });
+            </script>
+          </div>
+        </section>
+
+        <!-- SECTION: CODE BLOCKS -->
+        <section id="block-code" class="mb-12 scroll-mt-20 border-t border-slate-100 dark:border-slate-800/60 pt-10">
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">Mã nguồn (Code Blocks)</h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Trình diễn mã nguồn lập trình với font chữ Courier/Mono và tích hợp sẵn chức năng Copy nhanh.</p>
+
+          <docs-code-block language="javascript" code="const agent = new AIAgent({
+  name: 'Antigravity',
+  skills: ['coding', 'planning']
+});
+agent.start();"></docs-code-block>
+        </section>
+
+        <!-- SECTION: TABLES -->
+        <section id="block-table" class="mb-12 scroll-mt-20 border-t border-slate-100 dark:border-slate-800/60 pt-10">
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">Bảng biểu & Dữ liệu (Tables)</h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Sử dụng để liệt kê tham số API, cấu hình, thông số kỹ thuật.</p>
+
+          <div class="overflow-x-auto rounded-xl border border-slate-200/80 dark:border-slate-800">
+            <table class="w-full text-left text-sm border-collapse">
+              <thead>
+                <tr class="bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white font-semibold">
+                  <th class="px-4 py-3">Tham số</th>
+                  <th class="px-4 py-3">Kiểu dữ liệu</th>
+                  <th class="px-4 py-3">Mô tả</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-150 dark:divide-slate-800/80">
+                <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-all">
+                  <td class="px-4 py-3 font-mono font-medium text-brand-600 dark:text-brand-400">configPath</td>
+                  <td class="px-4 py-3 text-slate-500">string</td>
+                  <td class="px-4 py-3">Đường dẫn tương đối tới file config.json</td>
+                </tr>
+                <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-all">
+                  <td class="px-4 py-3 font-mono font-medium text-brand-600 dark:text-brand-400">autoCommit</td>
+                  <td class="px-4 py-3 text-slate-500">boolean</td>
+                  <td class="px-4 py-3">Tự động đẩy mã nguồn sau khi tạo thành công.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- SECTION: CARDS GRID -->
+        <section id="block-cards" class="mb-12 scroll-mt-20 border-t border-slate-100 dark:border-slate-800/60 pt-10">
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">Danh sách dạng Thẻ (Cards Grid)</h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Thích hợp làm danh mục bài viết nổi bật hoặc tính năng chính.</p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="p-5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-brand-500 dark:hover:border-brand-500 hover:shadow-md hover:-translate-y-0.5 transition-all bg-white dark:bg-slate-900 group">
+              <div class="w-10 h-10 rounded-lg bg-brand-50 dark:bg-brand-950/50 flex items-center justify-center text-brand-600 dark:text-brand-400 mb-4 group-hover:scale-110 transition-transform">
+                <i data-lucide="zap" class="w-5 h-5"></i>
+              </div>
+              <h4 class="font-semibold text-slate-900 dark:text-white text-base mb-1.5">Tốc độ tối ưu</h4>
+              <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Sử dụng Tailwind CDN tải nhanh và dễ chạy ngay mà không cần cài đặt Node.js ban đầu.</p>
+            </div>
+
+            <div class="p-5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-brand-500 dark:hover:border-brand-500 hover:shadow-md hover:-translate-y-0.5 transition-all bg-white dark:bg-slate-900 group">
+              <div class="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-4 group-hover:scale-110 transition-transform">
+                <i data-lucide="shield-check" class="w-5 h-5"></i>
+              </div>
+              <h4 class="font-semibold text-slate-900 dark:text-white text-base mb-1.5">Tính nhất quán</h4>
+              <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Mọi agent sẽ tuân thủ cấu trúc của template để duy trì trải nghiệm liền mạch.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION: STEPS -->
+        <section id="block-steps" class="mb-12 scroll-mt-20 border-t border-slate-100 dark:border-slate-800/60 pt-10">
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">Quy trình thực hiện (Steps Layout)</h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Trình diễn tuần tự các bước cài đặt hoặc hướng dẫn từng bước.</p>
+
+          <div class="space-y-6 ml-4 border-l-2 border-slate-150 dark:border-slate-800 pl-6 relative">
+            <!-- Step 1 -->
+            <div class="relative">
+              <div class="absolute -left-[35px] top-0.5 w-6 h-6 rounded-full bg-brand-500 text-white flex items-center justify-center font-bold text-xs ring-4 ring-white dark:ring-slate-950">1</div>
+              <h4 class="font-semibold text-slate-900 dark:text-white text-sm mb-1">Khởi tạo Dự án</h4>
+              <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Chạy lệnh của NPM CLI để tự động kéo file template chuẩn về thư mục của bạn.</p>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="relative">
+              <div class="absolute -left-[35px] top-0.5 w-6 h-6 rounded-full bg-brand-500 text-white flex items-center justify-center font-bold text-xs ring-4 ring-white dark:ring-slate-950">2</div>
+              <h4 class="font-semibold text-slate-900 dark:text-white text-sm mb-1">Tích hợp AI Agent</h4>
+              <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Cấu hình prompt của AI Agent để tham chiếu đến các anchor của file này.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION: TABS -->
+        <section id="block-tabs" class="mb-12 scroll-mt-20 border-t border-slate-100 dark:border-slate-800/60 pt-10">
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">Chuyển đổi tab (Tabs Switcher)</h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Dùng để chuyển đổi giữa các câu lệnh cài đặt hoặc các ngôn ngữ lập trình khác nhau.</p>
+
+          <div class="rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden bg-white dark:bg-slate-900">
+            <div class="flex border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 px-4">
+              <button class="tab-btn px-4 py-3 text-sm font-medium border-b-2 border-brand-500 text-brand-600 dark:text-brand-400 transition-all" data-tab-target="npm-pane">npm</button>
+              <button class="tab-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-all" data-tab-target="yarn-pane">yarn</button>
+              <button class="tab-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-all" data-tab-target="pnpm-pane">pnpm</button>
+            </div>
+            <div class="p-4 bg-slate-950 text-slate-200 font-mono text-xs">
+              <div id="npm-pane" class="tab-pane block">npm install create-tailwind-docs</div>
+              <div id="yarn-pane" class="tab-pane hidden">yarn add create-tailwind-docs</div>
+              <div id="pnpm-pane" class="tab-pane hidden">pnpm add create-tailwind-docs</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION: ACCORDIONS -->
+        <section id="block-accordions" class="mb-12 scroll-mt-20 border-t border-slate-100 dark:border-slate-800/60 pt-10">
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">Hộp mở rộng (Accordions / FAQs)</h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Thích hợp cho phần câu hỏi thường gặp (FAQs) hoặc nội dung ẩn/hiện nâng cao.</p>
+
+          <div class="space-y-3">
+            <docs-accordion title="Làm sao để tuân thủ thiết kế tối giản?">
+              Hãy hạn chế tự viết các class CSS ad-hoc, thay vào đó hãy sử dụng lại hệ màu Slate/Indigo/Brand đã được cấu hình sẵn trong config Tailwind của tệp tin.
+            </docs-accordion>
+
+            <docs-accordion title="Tôi có thể tùy chỉnh font chữ khác không?">
+              Được. Bạn có thể thay đổi link Google Fonts tại phần Header và cập nhật cấu hình <code>fontFamily</code> trong đoạn script cài đặt của Tailwind CSS.
+            </docs-accordion>
+          </div>
+        </section>
+
+        <!-- SECTION: BADGES & BUTTONS -->
+        <section id="block-badges-buttons" class="mb-12 scroll-mt-20 border-t border-slate-100 dark:border-slate-800/60 pt-10">
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">Nhãn và Nút bấm (Badges & Buttons)</h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Sử dụng để định danh trạng thái API hoặc các liên kết hành động chính.</p>
+
+          <div class="space-y-6">
+            <!-- Badges -->
+            <div class="flex flex-wrap gap-2 items-center">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand-100 text-brand-700 dark:bg-brand-950/40 dark:text-brand-300 border border-brand-200/50 dark:border-brand-900/30">GET</span>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200/50 dark:border-emerald-900/30">POST</span>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-200/50 dark:border-amber-900/30">Required</span>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">v1.2.0</span>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex flex-wrap gap-3">
+              <button class="px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 active:bg-brand-850 text-white font-medium text-sm transition-all shadow-sm shadow-brand-500/10">Nút chính (Primary)</button>
+              <button class="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-300 font-medium text-sm transition-all">Nút phụ (Outline)</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION: DIAGRAMS -->
+        <section id="block-diagrams" class="mb-12 scroll-mt-20 border-t border-slate-100 dark:border-slate-800/60 pt-10">
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">Sơ đồ luồng & Sơ đồ tư duy (Mermaid.js)</h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Vẽ sơ đồ luồng dữ liệu, sơ đồ tuần tự hoặc mindmap trực tiếp từ văn bản text. AI Agent rất thích hợp để sinh nội dung này.</p>
+
+          <div class="space-y-6">
+            <!-- Flowchart Container -->
+            <div id="mermaid-container" class="relative group rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 transition-all duration-300">
+              <!-- Expand / Close Buttons -->
+              <div class="absolute top-3 right-3 flex gap-2 z-10">
+                <button id="expand-mermaid-btn" class="p-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-slate-850 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-all border border-slate-200 dark:border-slate-700 shadow-sm" title="Xem toàn màn hình">
+                  <i data-lucide="maximize-2" class="w-4 h-4"></i>
+                </button>
+                <button id="close-mermaid-btn" class="hidden p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition-all border border-slate-800 shadow-sm" title="Đóng">
+                  <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+              </div>
+              
+              <div class="overflow-x-auto flex justify-center pt-4" id="main-mermaid-diagram">
+                <div class="mermaid w-full">
+                  flowchart LR
+                    subgraph db_pg["PostgreSQL - 1 database"]
+                        users[users]
+                        sub_plan["subscriptions plan=PRO"]
+                        wallets[credit_wallets]
+                        proj_1[projects #1]
+                        proj_2[projects #2]
+                        runtimes[project_runtimes]
+                        channels[project_channels]
+                        
+                        users --> sub_plan
+                        users --> wallets
+                        users --> proj_1
+                        users --> proj_2
+                        proj_1 --> runtimes
+                        proj_1 --> channels
+                    end
+                </div>
+              </div>
+            </div>
+
+            <!-- Flowchart Container 2 (Architecture TD) -->
+            <div id="mermaid-container-2" class="relative group rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 mt-6 transition-all duration-300">
+              <!-- Expand / Close Buttons -->
+              <div class="absolute top-3 right-3 flex gap-2 z-10">
+                <button id="expand-mermaid-btn-2" class="p-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-slate-850 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-all border border-slate-200 dark:border-slate-700 shadow-sm" title="Xem toàn màn hình">
+                  <i data-lucide="maximize-2" class="w-4 h-4"></i>
+                </button>
+                <button id="close-mermaid-btn-2" class="hidden p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition-all border border-slate-800 shadow-sm" title="Đóng">
+                  <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+              </div>
+              
+              <div class="overflow-x-auto flex justify-center pt-4" id="main-mermaid-diagram-2">
+                <div class="mermaid w-full">
+                  flowchart TD
+                    subgraph cloud_private["Cloud (private)"]
+                        web["cloud-web hoặc web + flags"]
+                        api["cloud-api"]
+                        fleet["fleet package"]
+                        billing["billing package"]
+                        container["1 container/project"]
+                        gateways["N gateways"]
+
+                        web --> api
+                        api --> fleet
+                        api --> billing
+                        fleet --> container
+                        container --> gateways
+                    end
+
+                    subgraph oss_public["OSS (công khai)"]
+                        web_oss["apps/web"]
+                        api_oss["apps/api"]
+                        proxy["proxy WS"]
+                        db[(PostgreSQL)]
+                        sync["sync file"]
+                        core["@aucobot/control-plane-core"]
+                        gateway_oss["1x gateway"]
+                        volume["volume"]
+
+                        web_oss --> api_oss
+                        api_oss --> proxy
+                        api_oss --> db
+                        api_oss --> sync
+                        api_oss --> core
+                        proxy --> gateway_oss
+                        sync --> volume
+                    end
+
+                    billing -->|import packages| core
+                    gateways ~~~ web_oss
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION: CHARTS -->
+        <section id="block-charts" class="mb-12 scroll-mt-20 border-t border-slate-100 dark:border-slate-800/60 pt-10">
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">Biểu đồ dữ liệu (Chart.js)</h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Trình diễn biểu đồ trực quan, sinh động (cột, đường, tròn) phục vụ báo cáo số liệu.</p>
+
+          <div class="p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+            <div class="max-w-md mx-auto aspect-video">
+              <canvas id="sample-chart"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <!-- AI_AGENT:MAIN_CONTENT_END -->
+
+      </article>
+
+      <!-- RIGHT SIDEBAR (TABLE OF CONTENTS) -->
+      <aside class="hidden lg:block w-48 shrink-0 sticky top-24 self-start max-h-[calc(100vh-6rem)] overflow-y-auto pr-2 text-xs">
+        <h4 class="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[10px] mb-3">Mục lục trang này</h4>
+        
+        <ul id="toc-list" class="space-y-2.5 border-l border-slate-100 dark:border-slate-800 pl-3.5">
+          <!-- Sẽ được tự động cập nhật bởi JS -->
+        </ul>
+      </aside>
+
+    </main>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="mt-auto border-t border-slate-200/80 bg-white/50 py-6 dark:border-slate-800/80 dark:bg-slate-900/30 text-center text-xs text-slate-400 transition-colors">
+    <div class="max-w-[90rem] mx-auto px-4">
+      <p>© 2026 DevDocs. Được tối ưu hóa cho AI & Lập trình viên.</p>
+    </div>
+  </footer>
+
+  <!-- CORE SCRIPTS -->
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // ==========================================
+    // 1. Dark Mode / Light Mode State Manager
+    // ==========================================
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+
+    function updateThemeIcons() {
+      if (document.documentElement.classList.contains('dark')) {
+        themeToggleDarkIcon.classList.add('hidden');
+        themeToggleLightIcon.classList.remove('hidden');
+      } else {
+        themeToggleLightIcon.classList.add('hidden');
+        themeToggleDarkIcon.classList.remove('hidden');
+      }
+    }
+
+    // Init theme
+    if (localStorage.getItem('color-theme') === 'dark' || 
+        (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    updateThemeIcons();
+
+    // Toggle theme action
+    themeToggleBtn.addEventListener('click', function() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
+      updateThemeIcons();
+      
+      // Update Chart.js if exists
+      if (window.myChart) {
+        window.myChart.options.plugins.legend.labels.color = isDark ? '#cbd5e1' : '#334155';
+        window.myChart.options.scales.y.grid.color = isDark ? '#334155' : '#e2e8f0';
+        window.myChart.options.scales.y.ticks.color = isDark ? '#cbd5e1' : '#334155';
+        window.myChart.options.scales.x.ticks.color = isDark ? '#cbd5e1' : '#334155';
+        window.myChart.update();
+      }
+
+      // Re-initialize mermaid theme
+      if (typeof mermaid !== 'undefined') {
+        renderMermaid();
+      }
+    });
+
+    // ==========================================
+    // 2. Mobile Sidebar Drawer Toggle
+    // ==========================================
+    const mobileSidebarToggle = document.getElementById('mobile-sidebar-toggle');
+    const mobileSidebarClose = document.getElementById('mobile-sidebar-close');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+
+    function openSidebar() {
+      sidebar.classList.remove('-translate-x-full');
+      sidebarBackdrop.classList.remove('hidden');
+    }
+
+    function closeSidebar() {
+      sidebar.classList.add('-translate-x-full');
+      sidebarBackdrop.classList.add('hidden');
+    }
+
+    mobileSidebarToggle.addEventListener('click', openSidebar);
+    mobileSidebarClose.addEventListener('click', closeSidebar);
+    sidebarBackdrop.addEventListener('click', closeSidebar);
+
+    // Close sidebar on link click (mobile)
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+      link.addEventListener('click', closeSidebar);
+    });
+
+    // ==========================================
+    // 3. Auto Generate Table of Contents (TOC) & Highlight Active Navigation
+    // ==========================================
+    const tocList = document.getElementById('toc-list');
+    const sections = document.querySelectorAll('article section');
+
+    sections.forEach(sec => {
+      const h2 = sec.querySelector('h2') || sec.querySelector('h1');
+      if (h2) {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = `#${sec.id}`;
+        a.textContent = h2.textContent.trim();
+        a.className = 'toc-link block text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors';
+        li.appendChild(a);
+        tocList.appendChild(li);
+      }
+    });
+
+    const tocLinks = document.querySelectorAll('.toc-link');
+
+    // Scrollspy Highlight
+    function onScroll() {
+      let scrollPos = window.scrollY || document.documentElement.scrollTop || 0;
+      const headerOffset = 100;
+
+      sections.forEach((sec) => {
+        const top = sec.offsetTop - headerOffset;
+        const bottom = top + sec.offsetHeight;
+
+        if (scrollPos >= top && scrollPos < bottom) {
+          // Highlight Sidebar Links
+          navLinks.forEach(link => {
+            if (link.getAttribute('href') === `#${sec.id}`) {
+              link.className = 'nav-link block py-1.5 text-brand-600 dark:text-brand-400 font-medium -ml-3.5 pl-3.5 border-l-2 border-brand-600 dark:border-brand-400 transition-all';
+            } else {
+              link.className = 'nav-link block py-1.5 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-all';
+            }
+          });
+
+          // Highlight TOC Links
+          tocLinks.forEach(link => {
+            if (link.getAttribute('href') === `#${sec.id}`) {
+              link.classList.remove('text-slate-400');
+              link.classList.add('text-brand-600', 'dark:text-brand-400', 'font-medium');
+            } else {
+              link.classList.remove('text-brand-600', 'dark:text-brand-400', 'font-medium');
+              link.classList.add('text-slate-400');
+            }
+          });
+        }
+      });
+    }
+
+    window.addEventListener('scroll', onScroll);
+    onScroll();
+
+    // ==========================================
+    // 4. Code Copy Button Functionality
+    // ==========================================
+    const copyButtons = document.querySelectorAll('.copy-btn');
+    copyButtons.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const textToCopy = this.getAttribute('data-code');
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          const label = this.querySelector('span');
+          label.textContent = 'Copied!';
+          this.classList.add('text-emerald-500');
+          setTimeout(() => {
+            label.textContent = 'Copy';
+            this.classList.remove('text-emerald-500');
+          }, 2000);
+        }).catch(err => {
+          console.error('Không thể copy: ', err);
+        });
+      });
+    });
+
+    // ==========================================
+    // 5. Basic Client Search Filter
+    // ==========================================
+    const searchInput = document.getElementById('search-input');
+    searchInput.addEventListener('input', function(e) {
+      const term = e.target.value.toLowerCase().trim();
+      sections.forEach(sec => {
+        const text = sec.textContent.toLowerCase();
+        sec.style.display = text.includes(term) ? 'block' : 'none';
+      });
+    });
+
+    // Ctrl + K Shortcut to focus search
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        searchInput.focus();
+      }
+    });
+
+    // ==========================================
+    // 6. Interactive Tab Switcher
+    // ==========================================
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const targetId = this.getAttribute('data-tab-target');
+        const container = this.closest('.rounded-xl');
+        
+        container.querySelectorAll('.tab-btn').forEach(b => {
+          b.classList.remove('border-brand-500', 'text-brand-600', 'dark:text-brand-400');
+          b.classList.add('border-transparent', 'text-slate-500');
+        });
+        
+        this.classList.remove('border-transparent', 'text-slate-500');
+        this.classList.add('border-brand-500', 'text-brand-600', 'dark:text-brand-400');
+        
+        container.querySelectorAll('.tab-pane').forEach(pane => {
+          pane.classList.remove('block');
+          pane.classList.add('hidden');
+        });
+        
+        const activePane = container.querySelector(`#${targetId}`);
+        if (activePane) {
+          activePane.classList.remove('hidden');
+          activePane.classList.add('block');
+        }
+      });
+    });
+
+    // ==========================================
+    // 7. Initialize Chart.js
+    // ==========================================
+    const ctx = document.getElementById('sample-chart');
+    if (ctx) {
+      const isDark = document.documentElement.classList.contains('dark');
+      window.myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5'],
+          datasets: [{
+            label: 'Lượng truy cập API (triệu)',
+            data: [12, 19, 3, 5, 2],
+            backgroundColor: '#8b5cf6', // brand-500
+            borderRadius: 6,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: {
+                color: isDark ? '#cbd5e1' : '#334155'
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: isDark ? '#334155' : '#e2e8f0'
+              },
+              ticks: {
+                color: isDark ? '#cbd5e1' : '#334155'
+              }
+            },
+            x: {
+              grid: {
+                display: false
+              },
+              ticks: {
+                color: isDark ? '#cbd5e1' : '#334155'
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // ==========================================
+    // 8. Initialize Mermaid.js (Cursor Style)
+    // ==========================================
+    let mermaidInitialized = false;
+    function renderMermaid() {
+      if (typeof mermaid !== 'undefined') {
+        const isDark = document.documentElement.classList.contains('dark');
+        const themeVariables = {
+          fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Fira Code", monospace',
+          fontSize: '13px',
+          primaryColor: isDark ? '#1a1a1a' : '#ffffff',
+          primaryTextColor: isDark ? '#d4d4d8' : '#18181b',
+          primaryBorderColor: isDark ? '#3f3f46' : '#cbd5e1',
+          lineColor: isDark ? '#52525b' : '#94a3b8',
+          arrowheadColor: isDark ? '#60a5fa' : '#3b82f6',
+          clusterBkg: isDark ? '#111113' : '#f8fafc',
+          clusterBorder: isDark ? '#27272a' : '#e2e8f0',
+          titleColor: isDark ? '#a1a1aa' : '#64748b',
+          secondaryColor: isDark ? '#27272a' : '#f1f5f9',
+          tertiaryColor: isDark ? '#09090b' : '#f8fafc'
+        };
+
+        mermaid.initialize({
+          startOnLoad: !mermaidInitialized,
+          theme: 'base',
+          themeVariables: themeVariables,
+          securityLevel: 'loose',
+          flowchart: {
+            useMaxWidth: true,
+            htmlLabels: true,
+            curve: 'stepAfter'
+          }
+        });
+        
+        if (mermaidInitialized) {
+          try {
+            mermaid.run();
+          } catch(e) {}
+        }
+        mermaidInitialized = true;
+      }
+    }
+
+    renderMermaid();
+
+    // ==========================================
+    // 9. Mermaid Fullscreen Board Toggle
+    // ==========================================
+    function setupMermaidFullscreen(containerId, expandBtnId, closeBtnId) {
+      const container = document.getElementById(containerId);
+      const expandBtn = document.getElementById(expandBtnId);
+      const closeBtn = document.getElementById(closeBtnId);
+      
+      if (container && expandBtn && closeBtn) {
+        expandBtn.addEventListener('click', function() {
+          container.classList.add('mermaid-fullscreen-active');
+          expandBtn.classList.add('hidden');
+          closeBtn.classList.remove('hidden');
+          document.body.style.overflow = 'hidden';
+        });
+
+        closeBtn.addEventListener('click', function() {
+          container.classList.remove('mermaid-fullscreen-active');
+          expandBtn.classList.remove('hidden');
+          closeBtn.classList.add('hidden');
+          document.body.style.overflow = '';
+        });
+      }
+    }
+
+    setupMermaidFullscreen('mermaid-container', 'expand-mermaid-btn', 'close-mermaid-btn');
+    setupMermaidFullscreen('mermaid-container-2', 'expand-mermaid-btn-2', 'close-mermaid-btn-2');
+  </script>
+
+</body>
+</html>

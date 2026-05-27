@@ -1,0 +1,26 @@
+{
+  "name": "create-tailwind-docs",
+  "version": "1.0.0",
+  "description": "A CLI tool to scaffold a beautiful, responsive HTML documentation template using Tailwind CSS CDN.",
+  "main": "bin/cli.js",
+  "bin": {
+    "create-tailwind-docs": "./bin/cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
+  "keywords": [
+    "tailwind",
+    "docs",
+    "template",
+    "cli",
+    "scaffold",
+    "documentation",
+    "ai-agent"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=12.0.0"
+  }
+}
