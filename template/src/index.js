@@ -5,9 +5,9 @@ import Accordion from './Accordion';
 import CodeBlock from './CodeBlock';
 
 // Register custom elements without Shadow DOM so they inherit Tailwind CSS from the host page
-register(Alert, 'docs-alert', ['type', 'title', 'dismissible', 'className', 'icon'], { shadow: false });
-register(Accordion, 'docs-accordion', ['title', 'open'], { shadow: false });
-register(CodeBlock, 'docs-code-block', ['language', 'code'], { shadow: false });
+register(Alert, 'mau-alert', ['type', 'title', 'dismissible', 'className', 'icon'], { shadow: false });
+register(Accordion, 'mau-accordion', ['title', 'open'], { shadow: false });
+register(CodeBlock, 'mau-code-block', ['language', 'code'], { shadow: false });
 
 // Expose DevDocs helper methods to window for JS Functional rendering
 const DevDocs = {

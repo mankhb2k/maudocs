@@ -382,9 +382,9 @@
 
           <div class="space-y-4">
             <!-- Cách 1: Sử dụng qua Custom HTML Tag -->
-            <docs-alert type="info" title="Thông tin chi tiết (HTML Custom Tag)">
+            <mau-alert type="info" title="Thông tin chi tiết (HTML Custom Tag)">
               Đây là một khối thông báo dạng Info được dựng sẵn bằng <strong>Web Component</strong> kế thừa Tailwind CSS.
-            </docs-alert>
+            </mau-alert>
 
             <!-- Cách 2: Sử dụng qua JS Functional (React/TSX style) -->
             <div id="dynamic-alert-root"></div>
@@ -411,11 +411,11 @@
           <h2 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">Mã nguồn (Code Blocks)</h2>
           <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Trình diễn mã nguồn lập trình với font chữ Courier/Mono và tích hợp sẵn chức năng Copy nhanh.</p>
 
-          <docs-code-block language="javascript" code="const agent = new AIAgent({
+          <mau-code-block language="javascript" code="const agent = new AIAgent({
   name: 'Antigravity',
   skills: ['coding', 'planning']
 });
-agent.start();"></docs-code-block>
+agent.start();"></mau-code-block>
         </section>
 
         <!-- SECTION: TABLES -->
@@ -519,13 +519,13 @@ agent.start();"></docs-code-block>
           <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Thích hợp cho phần câu hỏi thường gặp (FAQs) hoặc nội dung ẩn/hiện nâng cao.</p>
 
           <div class="space-y-3">
-            <docs-accordion title="Làm sao để tuân thủ thiết kế tối giản?">
+            <mau-accordion title="Làm sao để tuân thủ thiết kế tối giản?">
               Hãy hạn chế tự viết các class CSS ad-hoc, thay vào đó hãy sử dụng lại hệ màu Slate/Indigo/Brand đã được cấu hình sẵn trong config Tailwind của tệp tin.
-            </docs-accordion>
+            </mau-accordion>
 
-            <docs-accordion title="Tôi có thể tùy chỉnh font chữ khác không?">
+            <mau-accordion title="Tôi có thể tùy chỉnh font chữ khác không?">
               Được. Bạn có thể thay đổi link Google Fonts tại phần Header và cập nhật cấu hình <code>fontFamily</code> trong đoạn script cài đặt của Tailwind CSS.
-            </docs-accordion>
+            </mau-accordion>
           </div>
         </section>
 
