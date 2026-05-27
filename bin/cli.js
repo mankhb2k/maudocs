@@ -14,66 +14,67 @@ const styles = {
   red: '\x1b[31m',
 };
 
-console.log(`\n${styles.bold}${styles.blue}=== Create Tailwind Docs CLI ===${styles.reset}\n`);
+console.log(`\n${styles.bold}${styles.blue}=== Create MauDocs CLI ===${styles.reset}\n`);
 
-// Get destination filename, default to 'index.html'
-const targetFileName = process.argv[2] || 'index.html';
-const destPath = path.resolve(process.cwd(), targetFileName);
+// Default parameters
+let fileName = 'index.html';
+let folderName = 'docs';
 
-// Locate the template file
+// Parse arguments
+const args = process.argv.slice(2);
+args.forEach(arg => {
+  if (arg.startsWith('--')) {
+    // Flag specifies the folder name, e.g. --my-guide
+    folderName = arg.slice(2);
+  } else if (!arg.startsWith('-')) {
+    // Positional argument specifies the file name, e.g. test.html
+    fileName = arg;
+  }
+});
+
+// Resolve paths
+const destDir = path.resolve(process.cwd(), folderName);
+const destFilePath = path.join(destDir, fileName);
 const templatePath = path.join(__dirname, '../template/index.html');
 
+// Verify template exists
 if (!fs.existsSync(templatePath)) {
   console.error(`${styles.red}❌ Error: Template file not found at ${templatePath}${styles.reset}`);
   process.exit(1);
 }
 
+// Create destination directory if it doesn't exist
+if (!fs.existsSync(destDir)) {
+  fs.mkdirSync(destDir, { recursive: true });
+}
+
 // Check if destination file already exists
-if (fs.existsSync(destPath)) {
-  console.log(`${styles.yellow}⚠️ Warning: File "${targetFileName}" already exists in the current directory.${styles.reset}`);
+if (fs.existsSync(destFilePath)) {
+  console.log(`${styles.yellow}⚠️ Warning: File "${fileName}" already exists in the directory "${folderName}".${styles.reset}`);
   console.log(`If you want to overwrite it, please delete or rename it first.`);
-  console.log(`Or run: ${styles.cyan}npx create-tailwind-docs custom-name.html${styles.reset} to use a different filename.\n`);
+  console.log(`Or run: ${styles.cyan}npx create-maudocs custom-name.html --custom-folder${styles.reset} to use different names.\n`);
   process.exit(0);
 }
 
-function copyFolderSync(from, to) {
-  if (!fs.existsSync(to)) {
-    fs.mkdirSync(to, { recursive: true });
-  }
-  fs.readdirSync(from).forEach(element => {
-    const stat = fs.lstatSync(path.join(from, element));
-    if (stat.isFile()) {
-      fs.copyFileSync(path.join(from, element), path.join(to, element));
-    } else if (stat.isDirectory()) {
-      copyFolderSync(path.join(from, element), path.join(to, element));
-    }
-  });
-}
-
 try {
-  console.log(`Copying template to: ${styles.cyan}${destPath}${styles.reset}...`);
-  fs.copyFileSync(templatePath, destPath);
-  
-  // Copy components folder recursively
-  const componentsSrc = path.join(__dirname, '../template/components');
-  const componentsDest = path.resolve(path.dirname(destPath), 'components');
-  if (fs.existsSync(componentsSrc)) {
-    console.log(`Copying components folder to: ${styles.cyan}${componentsDest}${styles.reset}...`);
-    copyFolderSync(componentsSrc, componentsDest);
-  }
+  console.log(`Reading template source...`);
+  let htmlContent = fs.readFileSync(templatePath, 'utf8');
 
-  // Copy components.js file
-  const componentsJsSrc = path.join(__dirname, '../template/components.js');
-  const componentsJsDest = path.resolve(path.dirname(destPath), 'components.js');
-  if (fs.existsSync(componentsJsSrc)) {
-    console.log(`Copying components.js to: ${styles.cyan}${componentsJsDest}${styles.reset}...`);
-    fs.copyFileSync(componentsJsSrc, componentsJsDest);
-  }
+  // Replace local script reference with the jsDelivr CDN link pointing to your repository
+  const cdnUrl = 'https://cdn.jsdelivr.net/gh/mankhb2k/maudocs@main/template/components.js';
+  console.log(`Injecting CDN script: ${styles.cyan}${cdnUrl}${styles.reset}...`);
+  htmlContent = htmlContent.replace(
+    '<script src="components.js"></script>',
+    `<script src="${cdnUrl}"></script>`
+  );
 
-  console.log(`\n${styles.green}✨ Success! Beautiful Tailwind Docs template and components created successfully!${styles.reset}`);
+  console.log(`Writing template file to: ${styles.cyan}${destFilePath}${styles.reset}...`);
+  fs.writeFileSync(destFilePath, htmlContent, 'utf8');
+
+  console.log(`\n${styles.green}✨ Success! Beautiful MauDocs template created successfully in "${folderName}/"!${styles.reset}`);
   console.log(`\n${styles.bold}How to use:${styles.reset}`);
-  console.log(`  1. Open ${styles.cyan}${targetFileName}${styles.reset} directly in your browser to view.`);
-  console.log(`  2. Share the files or push them to GitHub / configure GitHub Pages.`);
+  console.log(`  1. Open ${styles.cyan}${folderName}/${fileName}${styles.reset} directly in your browser to view.`);
+  console.log(`  2. Share the file or push it to GitHub Pages.`);
   console.log(`  3. Have your AI agent insert content between the comment tags:\n`);
   console.log(`     - ${styles.bold}Sidebar Links:${styles.reset} between ${styles.cyan}<!-- AI_AGENT:SIDEBAR_NAVIGATION_START -->${styles.reset} and ${styles.cyan}<!-- ..._END -->${styles.reset}`);
   console.log(`     - ${styles.bold}Main Content:${styles.reset} between ${styles.cyan}<!-- AI_AGENT:MAIN_CONTENT_START -->${styles.reset} and ${styles.cyan}<!-- ..._END -->${styles.reset}`);
